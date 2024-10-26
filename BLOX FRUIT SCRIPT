@@ -1,0 +1,158 @@
+-- Vanxell Hub for Blox Fruits Auto-Farming
+-- Created by [Your Name or Team]
+-- WARNING: Use this script at your own risk.
+
+local VanxellHub = Instance.new("ScreenGui")
+VanxellHub.Name = "VanxellHub"
+VanxellHub.Parent = game.CoreGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainFrame.Visible = false -- Start with GUI hidden
+MainFrame.Parent = VanxellHub
+
+local Title = Instance.new("TextLabel")
+Title.Text = "Vanxell Hub - Blox Fruits Auto Farm"
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.TextScaled = true
+Title.Parent = MainFrame
+
+-- Function to create toggle buttons for each feature
+local function CreateToggleButton(name)
+    local Button = Instance.new("TextButton")
+    Button.Text = name
+    Button.Size = UDim2.new(0.9, 0, 0, 40)
+    Button.Position = UDim2.new(0.05, 0, #MainFrame:GetChildren() * 0.12 + 0.1, 0)
+    Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Parent = MainFrame
+    return Button
+end
+
+-- Auto-Farm Feature
+local autofarm = false
+local autofarmButton = CreateToggleButton("Toggle Auto-Farm")
+autofarmButton.MouseButton1Click:Connect(function()
+    autofarm = not autofarm
+    if autofarm then
+        autofarmButton.Text = "Auto-Farm: ON"
+        while autofarm do
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            if character then
+                -- Find enemies to attack
+                for _, enemy in pairs(workspace:GetChildren()) do
+                    if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy.Name ~= player.Name then
+                        local distance = (character.HumanoidRootPart.Position - enemy.PrimaryPart.Position).magnitude
+                        if distance < 50 then -- Adjust distance as needed
+                            character:MoveTo(enemy.PrimaryPart.Position)
+                            wait(0.5) -- Wait for movement
+                            enemy.Humanoid:TakeDamage(50) -- Adjust damage as needed
+                            wait(1) -- Adjust wait time to prevent spamming
+                        end
+                    end
+                end
+            end
+            wait(0.5) -- Adjust as needed
+        end
+    else
+        autofarmButton.Text = "Auto-Farm: OFF"
+    end
+end)
+
+-- Auto-Quest Feature
+local autoquest = false
+local autoquestButton = CreateToggleButton("Toggle Auto-Quest")
+autoquestButton.MouseButton1Click:Connect(function()
+    autoquest = not autoquest
+    if autoquest then
+        autoquestButton.Text = "Auto-Quest: ON"
+        while autoquest do
+            local player = game.Players.LocalPlayer
+            -- Add logic to automatically accept and complete quests from NPCs
+            -- This part is pseudocode, adjust to fit the game's API
+            wait(1) -- Adjust wait time as needed
+        end
+    else
+        autoquestButton.Text = "Auto-Quest: OFF"
+    end
+end)
+
+-- Auto-Stat Feature
+local autostat = false
+local autostatButton = CreateToggleButton("Toggle Auto-Stat")
+autostatButton.MouseButton1Click:Connect(function()
+    autostat = not autostat
+    if autostat then
+        autostatButton.Text = "Auto-Stat: ON"
+        while autostat do
+            -- Add logic to allocate stats automatically
+            -- This part is pseudocode, adjust to fit the game's API
+            wait(1) -- Adjust wait time as needed
+        end
+    else
+        autostatButton.Text = "Auto-Stat: OFF"
+    end
+end)
+
+-- Exit Button
+local ExitButton = Instance.new("TextButton")
+ExitButton.Text = "Exit"
+ExitButton.Size = UDim2.new(0.9, 0, 0, 40)
+ExitButton.Position = UDim2.new(0.05, 0, 0.8, 0)
+ExitButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+ExitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExitButton.Parent = MainFrame
+ExitButton.MouseButton1Click:Connect(function()
+    VanxellHub:Destroy()
+end)
+
+-- Close/Open GUI Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Text = "Open Hub"
+ToggleButton.Size = UDim2.new(0.1, 0, 0.05, 0)
+ToggleButton.Position = UDim2.new(0.01, 0, 0.01, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Parent = VanxellHub
+
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    ToggleButton.Text = MainFrame.Visible and "Close Hub" or "Open Hub"
+end)
+
+-- Draggable UI Function
+local UIS = game:GetService("UserInputService")
+local dragging, dragInput, dragStart, startPos
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
