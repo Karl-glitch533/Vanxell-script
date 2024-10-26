@@ -27,7 +27,7 @@ local function CreateToggleButton(name)
     local Button = Instance.new("TextButton")
     Button.Text = name
     Button.Size = UDim2.new(0.9, 0, 0, 40)
-    Button.Position = UDim2.new(0.05, 0, #MainFrame:GetChildren() * 0.12, 0)
+    Button.Position = UDim2.new(0.05, 0, #MainFrame:GetChildren() * 0.12 + 0.1, 0)
     Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.Parent = MainFrame
@@ -44,16 +44,17 @@ autofarmButton.MouseButton1Click:Connect(function()
         while autofarm do
             local player = game.Players.LocalPlayer
             local character = player.Character or player.CharacterAdded:Wait()
-
-            -- Attack enemies in range
-            for _, enemy in pairs(workspace:GetChildren()) do
-                if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy.Name ~= player.Name then
-                    local distance = (character.HumanoidRootPart.Position - enemy.PrimaryPart.Position).magnitude
-                    if distance < 50 then -- Adjust distance as needed
-                        character:MoveTo(enemy.PrimaryPart.Position)
-                        wait(0.5) -- Wait for movement
-                        enemy.Humanoid:TakeDamage(50) -- Adjust damage as needed
-                        wait(1) -- Adjust wait time to prevent spamming
+            if character then
+                -- Find enemies to attack
+                for _, enemy in pairs(workspace:GetChildren()) do
+                    if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy.Name ~= player.Name then
+                        local distance = (character.HumanoidRootPart.Position - enemy.PrimaryPart.Position).magnitude
+                        if distance < 50 then -- Adjust distance as needed
+                            character:MoveTo(enemy.PrimaryPart.Position)
+                            wait(0.5) -- Wait for movement
+                            enemy.Humanoid:TakeDamage(50) -- Adjust damage as needed
+                            wait(1) -- Adjust wait time to prevent spamming
+                        end
                     end
                 end
             end
@@ -72,7 +73,10 @@ autoquestButton.MouseButton1Click:Connect(function()
     if autoquest then
         autoquestButton.Text = "Auto-Quest: ON"
         while autoquest do
+            local player = game.Players.LocalPlayer
             -- Add logic to automatically accept and complete quests from NPCs
+            -- This part is pseudocode, adjust to fit the game's API
+            -- Example: Collect quests, defeat enemies, turn in quests
             wait(1) -- Adjust wait time as needed
         end
     else
@@ -89,6 +93,7 @@ autostatButton.MouseButton1Click:Connect(function()
         autostatButton.Text = "Auto-Stat: ON"
         while autostat do
             -- Add logic to allocate stats automatically
+            -- This part is pseudocode, adjust to fit the game's API
             wait(1) -- Adjust wait time as needed
         end
     else
